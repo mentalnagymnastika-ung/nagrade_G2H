@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <base target="_top"> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UMG | Logika (Nizovi)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+<style>
+    :root { 
+        --primary: #1e293b; 
+        --accent: #00bcd4; 
+        --bg: #f8fafc; 
+        --success: #10b981; 
+        --warning: #f59e0b; 
+        --danger: #ef4444; 
+        --text-dark: #0f172a; 
+        --text-light: #f1f5f9;
+        --card-shadow: 0 10px 25px -5px rgba(0,0,0,0.06), 0 8px 10px -6px rgba(0,0,0,0.06);
+    }
+    
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent; /* Uklanja plavi blesak na dodir kod mobilnih */
+    }
+
+    body { 
+        font-family: 'Montserrat', sans-serif; 
+        margin: 0; 
+        padding: 0;
+        background-color: var(--bg); 
+        color: var(--text-dark);
+        display: flex; 
+        justify-content: center;
+        align-items: center;
+        height: 100vh; 
+        height: 100dvh; /* Savršeno prilagođavanje mobilnim pretraživačima */
+        overflow: hidden;
+        position: fixed;
+        width: 100vw;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none; /* Zabranjuje zumiranje i skrol prstom */
+    }
+
+    /* MOBILNI KONTEJNER */
+    .phone-wrapper {
+        width: 100%;
+        max-width: 440px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background: var(--bg);
+    }
+
+    /* KONTEJNER IGRE */
+    .game-container { 
+        flex: 1; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: space-between; 
+        padding: 16px; 
+        text-align: center; 
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    /* NASLOVNA STRANA I LOGO */
+    .hero-section {
+        margin-top: 10px;
+    }
+    .hero-emoji {
+        font-size: 3.2rem;
+        margin-bottom: 5px;
+        animation: bounce 2s infinite;
+    }
+    h1 { 
+        margin: 0 0 5px 0; 
+        font-size: 2.4rem; 
+        font-weight: 900; 
+        color: var(--primary); 
+        text-transform: uppercase; 
+        letter-spacing: -1px;
+    }
+    
+    /* EDUKATIVNI BLOK NA POČETNOM EKRANU */
+    .edu-info-box {
+        background: white; 
+        border: 2px solid #e2e8f0; 
+        border-radius: 16px;
+        padding: 14px 18px; 
+        text-align: left; 
+        width: 100%; 
+        max-width: 340px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .edu-vrsta { color: var(--accent); font-weight: 900; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 6px;}
+    .edu-benefiti { font-size: 0.9rem; color: var(--primary); font-weight: 600; line-height: 1.4; margin-bottom: 12px;}
+    .edu-izvor { font-size: 0.75rem; color: #64748b; font-style: italic; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; display: inline-block; font-weight: 500;}
+
+    /* ZAGLAVLJE STATISTIKE UNUTAR IGRE */
+    .game-stats-header {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 350px;
+        margin-bottom: 8px;
+    }
+    .stat-bubble {
+        background: white;
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .stat-bubble span {
+        color: var(--accent);
+        font-weight: 900;
+    }
+
+    /* MOBILNI VIZUELNI TAJMER */
+    .timer-container {
+        width: 100%;
+        max-width: 350px;
+        margin-bottom: 10px;
+    }
+    .timer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+    .timer-bar-bg {
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .timer-bar-fill {
+        width: 100%;
+        height: 100%;
+        background: var(--success);
+        border-radius: 4px;
+        transition: width 0.1s linear, background-color 0.2s ease;
+    }
+
+    /* BOARD ZONE ZA LOPTICE */
+    .board-zone {
+        flex: 1; 
+        width: 100%; 
+        max-width: 350px; 
+        background: white; 
+        border: 2px solid #e2e8f0; 
+        border-radius: 20px; 
+        position: relative; 
+        padding: 10px; 
+        box-shadow: 0 8px 16px rgba(0,0,0,0.03);
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        overflow: hidden;
+    }
+
+    /* TRAKA ZA PRAVILO */
+    .instruction-bar {
+        background: #ffffff; 
+        color: var(--primary); 
+        padding: 8px 10px; 
+        border-radius: 14px;
+        font-weight: 900; 
+        font-size: 1.1rem; 
+        letter-spacing: 0.5px; 
+        margin-bottom: 8px;
+        border: 2.5px solid var(--accent); 
+        box-shadow: 0 4px 12px rgba(0, 188, 212, 0.12); 
+        width: 100%; 
+        text-align: center; 
+        z-index: 2; 
+        flex-shrink: 0;
+    }
+    .instruction-bar.desc { 
+        border-color: #8b5cf6; 
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12); 
+    }
+
+    /* KONTEJNER ZA LOPTICE */
+    #balls-container {
+        position: relative; 
+        width: 100%; 
+        flex: 1; 
+        height: 100%;
+    }
+
+    .number-ball {
+        position: absolute; 
+        border-radius: 50%; 
+        background: linear-gradient(135deg, var(--accent) 0%, #00838f 100%);
+        color: white; 
+        font-weight: 900; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        cursor: pointer; 
+        box-shadow: 0 6px 12px rgba(0,188,212,0.3);
+        transition: transform 0.1s, box-shadow 0.2s, background 0.2s, opacity 0.2s;
+        border: 3px solid white; 
+        user-select: none;
+    }
+    .number-ball:active { transform: scale(0.9) !important; }
+    
+    .number-ball.solved {
+        background: var(--success) !important; 
+        box-shadow: 0 0 15px var(--success) !important;
+        transform: scale(0.85); 
+        opacity: 0.4; 
+        pointer-events: none; 
+        border-color: var(--success) !important;
+    }
+    
+    .number-ball.reveal-target {
+        background: #fef08a !important;
+        color: var(--text-dark) !important;
+        border-color: var(--warning) !important;
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.9) !important;
+        animation: pulse-target 0.5s infinite alternate !important;
+        z-index: 20;
+    }
+
+    .number-ball.error {
+        background: var(--danger) !important; 
+        box-shadow: 0 0 20px var(--danger) !important;
+        animation: shake 0.3s;
+    }
+
+    @keyframes pulse-target {
+        from { transform: scale(1.0); }
+        to { transform: scale(1.18); }
+    }
+
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+    }
+
+    /* OBAVEŠTENJE ZA PROMENU FAZE */
+    #level-up-msg {
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        background: white; 
+        border: 3px solid var(--warning); 
+        border-radius: 20px;
+        padding: 20px 15px; 
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        display: none; 
+        z-index: 30; 
+        width: 85%; 
+        box-sizing: border-box; 
+        text-align: center;
+    }
+    .lvl-title { font-size: 1.5rem; font-weight: 900; color: var(--warning); margin-bottom: 6px; line-height: 1.1;}
+    .lvl-desc { font-size: 0.85rem; color: var(--primary); font-weight: 700; text-transform: uppercase;}
+
+    /* GLAVNA DUGMAD */
+    .btn-main { 
+        background: var(--primary); 
+        color: white; 
+        border: none; 
+        padding: 16px; 
+        border-radius: 16px; 
+        font-weight: 900; 
+        font-size: 1rem; 
+        cursor: pointer; 
+        transition: transform 0.1s, background-color 0.2s; 
+        width: 100%; 
+        max-width: 340px; 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+        text-transform: uppercase; 
+        letter-spacing: 0.5px;
+    }
+    .btn-main:active { transform: scale(0.96); }
+
+    /* OVERLAY EKRANI */
+    .overlay-screen { 
+        display: none; 
+        flex-direction: column; 
+        justify-content: center; 
+        align-items: center; 
+        width: 100%; 
+        height: 100%; 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        background: rgba(248, 250, 252, 0.97); 
+        z-index: 50; 
+        backdrop-filter: blur(8px);
+        padding: 20px;
+    }
+    .result-box { 
+        background: white; 
+        padding: 30px 20px; 
+        border-radius: 24px; 
+        box-shadow: var(--card-shadow); 
+        text-align: center; 
+        border: 2px solid #e2e8f0; 
+        width: 100%; 
+        max-width: 340px;
+    }
+
+    /* STATISTIČKI PODACI */
+    .stats-grid {
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 10px; 
+        margin: 20px 0;
+    }
+    .stat-card {
+        background: #f1f5f9; 
+        padding: 12px 8px; 
+        border-radius: 12px; 
+        text-align: center;
+    }
+    .stat-val {
+        font-size: 1.3rem; 
+        font-weight: 900; 
+        color: var(--primary);
+    }
+    .stat-lbl {
+        font-size: 0.7rem; 
+        color: #64748b; 
+        font-weight: 700; 
+        text-transform: uppercase;
+        margin-top: 2px;
+    }
+
+    /* SOUND TOGGLE */
+    .sound-toggle {
+        position: absolute; 
+        bottom: 16px; 
+        right: 16px;
+        background: white; 
+        border: 1.5px solid #e2e8f0; 
+        width: 44px; 
+        height: 44px;
+        border-radius: 50%; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        font-size: 1.1rem; 
+        cursor: pointer; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        z-index: 60;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>
+</head>
+<body>
+
+    <div class="phone-wrapper">
+
+        <!-- POČETNI EKRAN -->
+        <div id="start-screen" class="game-container">
+            <div class="hero-section">
+                <div class="hero-emoji">🔢</div>
+                <h1>Nizovi</h1>
+            </div>
+            
+            <div class="edu-info-box">
+                <div class="edu-vrsta">Oblast: Logika i Analiza</div>
+                <div class="edu-benefiti"><strong>Benefiti:</strong> Jača analitičko razmišljanje, radnu memoriju i brzinu numeričkog prosuđivanja.</div>
+                <div class="edu-izvor">Izvor: Journal of Cognitive Psychology</div>
+            </div>
+
+            <p style="font-size: 0.88rem; color: #475569; font-weight: 600; max-width: 320px; line-height: 1.4; margin: 10px 0;">
+                Pazi na pravilo u vrhu ekrana! Loptice klikći od najmanje do najveće, ili od najveće ka najmanjoj.<br>
+                <span style="color: var(--accent); font-weight: 800;">Raspon brojeva raste sa nivoima, a uvodimo i minuse!</span>
+            </p>
+            
+            <button class="btn-main" style="background: var(--accent);" onclick="startGame()">▶ ZAPOČNI IGRU</button>
+        </div>
+
+        <!-- EKRAN ZA IGRU -->
+        <div id="game-screen" class="game-container" style="display: none;">
+            
+            <div class="game-stats-header">
+                <div class="stat-bubble">Nivo: <span id="score-text">1</span></div>
+                <div class="stat-bubble">Najbolji: <span id="best-score-text">0</span></div>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-header">
+                    <span>PREOSTALO VREME</span>
+                    <span id="game-timer-text">15.0s</span>
+                </div>
+                <div class="timer-bar-bg">
+                    <div id="timer-bar-fill" class="timer-bar-fill"></div>
+                </div>
+            </div>
+            
+            <div class="board-zone">
+                
+                <div id="level-up-msg">
+                    <div class="lvl-title">NOVA FAZA! 🌟</div>
+                    <div class="lvl-desc" id="phase-desc-text">Proširujemo do 20!</div>
+                </div>
+
+                <div class="instruction-bar" id="instruction-bar">
+                    PRAVILO: 1 &lt; 2 &lt; 3
+                </div>
+
+                <div id="balls-container"></div>
+                
+            </div>
+
+        </div>
+
+        <!-- EKRAN ZA BRZI KRAJ (GREŠKA / VREME) -->
+        <div id="end-screen" class="overlay-screen">
+            <div class="result-box">
+                <h2 id="end-title" style="color: var(--danger); font-size: 1.6rem; margin: 0 0 10px 0; font-weight: 900;">GREŠKA!</h2>
+                <div style="font-size: 1rem; color: #64748b; font-weight: 600; margin-bottom: 10px;">Završenih nivoa:</div>
+                <div style="font-size: 3.5rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 25px;" id="final-score">0</div>
+                
+                <button class="btn-main" style="background: var(--success); margin-bottom: 10px;" onclick="prikaziStatistikuIZavrsi()">ZAVRŠI ZADATAK</button>
+                <button class="btn-main" style="background: #94a3b8;" onclick="startGame()">🔄 POKUŠAJ PONOVO</button>
+            </div>
+        </div>
+
+        <!-- KONAČNI EKRAN SA STATISTIKOM -->
+        <div id="summary-screen" class="overlay-screen">
+            <div class="result-box">
+                <div style="font-size: 2.8rem; margin-bottom: 10px;">🏆</div>
+                <h2 style="color: var(--primary); font-size: 1.6rem; margin: 0; font-weight: 900;">BRAVO!</h2>
+                <p style="color: #64748b; font-size: 0.9rem; font-weight: 600; margin: 5px 0 15px 0;">Zadatak je uspešno priveden kraju.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-val" id="stat-best-score">0</div>
+                        <div class="stat-lbl">Najbolji Rezultat</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val" id="stat-total-games">0</div>
+                        <div class="stat-lbl">Odigrano Rundi</div>
+                    </div>
+                </div>
+
+                <button class="btn-main" style="background: var(--accent);" onclick="vratiSeNaStartIzStatistike()">NAZAD NA POČETAK</button>
+            </div>
+        </div>
+
+        <!-- AUDIO TOGGLE -->
+        <button class="sound-toggle" onclick="toggleMute()" id="sound-btn">🔊</button>
+
+    </div>
+
+<script>
+    // =====================================
+    // ZVUČNI SINTETIZATOR (Web Audio API)
+    // =====================================
+    let isMuted = false;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function svirajZvuk(tip) {
+        if (isMuted) return;
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        try {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (tip === 'tacno') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            } else if (tip === 'netacno') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                osc.frequency.setValueAtTime(110, audioCtx.currentTime + 0.08); // A2
+                gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (tip === 'levelup') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } else if (tip === 'klik') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            }
+        } catch (e) {
+            console.log("Audio greška:", e);
+        }
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('sound-btn').innerText = isMuted ? '🔇' : '🔊';
+        svirajZvuk('klik');
+    }
+
+    // =====================================
+    // LOGIKA IGRE "NIZOVI"
+    // =====================================
+    const FAZE = [
+        { min: 1, max: 10, naziv: "Brojevi od 1 do 10" },
+        { min: 1, max: 20, naziv: "Proširujemo od 1 do 20!" },
+        { min: 1, max: 30, naziv: "Proširujemo od 1 do 30!" },
+        { min: -10, max: 30, naziv: "Pazi! Uvodimo minuse (od -10)!" },
+        { min: -20, max: 30, naziv: "Dublji minusi (od -20)!" },
+        { min: -30, max: 30, naziv: "Najteži nivo (od -30 do 30)!" }
+    ];
+
+    let score = 0; 
+    let bestScore = parseInt(localStorage.getItem("nizovi_best_score") || "0");
+    let totalGamesPlayed = parseInt(localStorage.getItem("nizovi_total_games") || "0");
+
+    let currentOrder = 'ASC'; 
+    let expectedSequence = [];
+    let ballElementMap = new Map(); // Mapa koja povezuje vrednost sa DOM elementom loptice
+    let currentStepIndex = 0;
+    
+    let gameTimer = null;
+    let maxTimeLimit = 150;
+    let timeLeft = 0;
+    let isPlaying = false;
+
+    function startGame() {
+        svirajZvuk('klik');
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('end-screen').style.display = 'none';
+        document.getElementById('summary-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        
+        score = 0;
+        document.getElementById('score-text').innerText = score;
+        document.getElementById('best-score-text').innerText = bestScore;
+        isPlaying = true;
+        
+        startLevel();
+    }
+
+    function startLevel() {
+        if (!isPlaying) return;
+        
+        document.getElementById('score-text').innerText = score;
+        
+        let fazaIndex = Math.floor(score / 8); 
+        if (fazaIndex >= FAZE.length) fazaIndex = FAZE.length - 1; 
+        
+        let brojLoptica = 3 + (score % 8); 
+        let trenutnaFaza = FAZE[fazaIndex];
+
+        maxTimeLimit = 50 + (brojLoptica * 25); 
+        timeLeft = maxTimeLimit;
+        updateTimerUI();
+
+        currentOrder = Math.random() > 0.5 ? 'ASC' : 'DESC';
+        let bar = document.getElementById('instruction-bar');
+        
+        if (currentOrder === 'ASC') {
+            bar.innerHTML = `PRAVILO:&nbsp;&nbsp; <span style="font-size: 1.2em; color: var(--danger);">1</span> &lt; 2 &lt; 3`;
+            bar.className = "instruction-bar";
+        } else {
+            bar.innerHTML = `PRAVILO:&nbsp;&nbsp; <span style="font-size: 1.2em; color: var(--warning);">10</span> &gt; 7 &gt; 2`;
+            bar.className = "instruction-bar desc";
+        }
+
+        let dostupniBrojevi = [];
+        for(let i = trenutnaFaza.min; i <= trenutnaFaza.max; i++) { dostupniBrojevi.push(i); }
+        
+        dostupniBrojevi.sort(() => Math.random() - 0.5);
+        let odabraniBrojevi = dostupniBrojevi.slice(0, brojLoptica);
+
+        expectedSequence = [...odabraniBrojevi].sort((a, b) => {
+            return currentOrder === 'ASC' ? a - b : b - a;
+        });
+
+        currentStepIndex = 0;
+        ballElementMap.clear();
+
+        // MERENJE SLOBODNOG PROSTORA
+        let container = document.getElementById('balls-container');
+        container.innerHTML = "";
+        
+        let rect = container.getBoundingClientRect();
+        let containerW = rect.width || 320;
+        let containerH = rect.height || 300;
+        
+        let baseSize = Math.max(44, 78 - (brojLoptica * 3)); 
+        let ballSize = Math.min(baseSize, Math.floor(containerH / 3.5), Math.floor(containerW / 3.5));
+        
+        let pozicije = [];
+
+        odabraniBrojevi.forEach((num) => {
+            let ball = document.createElement('div');
+            ball.className = "number-ball";
+            ball.innerText = num;
+            ball.style.width = ballSize + "px";
+            ball.style.height = ballSize + "px";
+            ball.style.fontSize = (ballSize * 0.42) + "px"; 
+            
+            let x, y, preklapanje;
+            let pokusaji = 0;
+            do {
+                preklapanje = false;
+                x = Math.random() * (containerW - ballSize - 10) + 5;
+                y = Math.random() * (containerH - ballSize - 10) + 5;
+                
+                for(let p of pozicije) {
+                    let dx = p.x - x;
+                    let dy = p.y - y;
+                    let udaljenost = Math.sqrt(dx*dx + dy*dy);
+                    if(udaljenost < ballSize + 6) { 
+                        preklapanje = true;
+                        break;
+                    }
+                }
+                pokusaji++;
+            } while(preklapanje && pokusaji < 150);
+
+            pozicije.push({x, y});
+            ball.style.left = x + "px";
+            ball.style.top = y + "px";
+            
+            ballElementMap.set(num, ball);
+            
+            ball.onclick = function() { tapBall(num, ball); };
+            container.appendChild(ball);
+        });
+
+        clearInterval(gameTimer);
+        gameTimer = setInterval(() => {
+            timeLeft--;
+            updateTimerUI();
+            if(timeLeft <= 0) { 
+                svirajZvuk('netacno');
+                otkrijResenjeIZavrsi("VREME JE ISTEKLO!", null);
+            }
+        }, 100);
+    }
+
+    function updateTimerUI() {
+        let textVal = (timeLeft / 10).toFixed(1) + "s";
+        document.getElementById('game-timer-text').innerText = textVal;
+
+        let fillBar = document.getElementById('timer-bar-fill');
+        let procenat = (timeLeft / maxTimeLimit) * 100;
+        fillBar.style.width = procenat + "%";
+
+        if(procenat <= 30) {
+            fillBar.style.backgroundColor = "var(--danger)";
+        } else if(procenat <= 60) {
+            fillBar.style.backgroundColor = "var(--warning)";
+        } else {
+            fillBar.style.backgroundColor = "var(--success)";
+        }
+    }
+
+    function tapBall(num, element) {
+        if(!isPlaying) return;
+
+        if (num === expectedSequence[currentStepIndex]) {
+            svirajZvuk('tacno');
+            element.classList.add('solved');
+            currentStepIndex++;
+
+            if (currentStepIndex === expectedSequence.length) {
+                clearInterval(gameTimer);
+                score++;
+                document.getElementById('score-text').innerText = score;
+                
+                if (score > 0 && score % 8 === 0) {
+                    svirajZvuk('levelup');
+                    let fazaIndex = Math.floor(score / 8);
+                    if (fazaIndex < FAZE.length) {
+                        let novaFaza = FAZE[fazaIndex];
+                        document.getElementById('phase-desc-text').innerText = novaFaza.naziv;
+                        
+                        document.getElementById('balls-container').innerHTML = "";
+                        document.getElementById('level-up-msg').style.display = 'block';
+                        
+                        setTimeout(() => {
+                            document.getElementById('level-up-msg').style.display = 'none';
+                            startLevel();
+                        }, 2200);
+                        return;
+                    }
+                }
+                setTimeout(startLevel, 300); 
+            }
+        } else {
+            svirajZvuk('netacno');
+            element.classList.add('error');
+            otkrijResenjeIZavrsi("POGREŠAN REDOSLED!", element);
+        }
+    }
+
+    // Otkriva tačnu lopticu koja je trebala biti kliknuta na 1 sekundu pre prelaska na kraj
+    function otkrijResenjeIZavrsi(poruka, pogresnaLoptica) {
+        isPlaying = false;
+        clearInterval(gameTimer);
+
+        let tacnaVrednost = expectedSequence[currentStepIndex];
+        let tacnaLoptica = ballElementMap.get(tacnaVrednost);
+
+        if (tacnaLoptica) {
+            tacnaLoptica.classList.add('reveal-target');
+        }
+
+        setTimeout(() => {
+            endGame(poruka);
+        }, 1100);
+    }
+
+    function endGame(poruka) {
+        isPlaying = false;
+        clearInterval(gameTimer);
+        
+        if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem("nizovi_best_score", bestScore);
+            document.getElementById('best-score-text').innerText = bestScore;
+        }
+        
+        totalGamesPlayed++;
+        localStorage.setItem("nizovi_total_games", totalGamesPlayed);
+        
+        document.getElementById('end-title').innerText = poruka;
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('end-screen').style.display = 'flex';
+    }
+
+    // =====================================
+    // INTEGRISANA MOBILNA NAVIGACIJA
+    // =====================================
+    function prikaziStatistikuIZavrsi() {
+        svirajZvuk('klik');
+        isPlaying = false;
+        clearInterval(gameTimer);
+
+        let danasnjiPlan = JSON.parse(localStorage.getItem("umg_dnevni_plan") || "null");
+        if(danasnjiPlan) {
+            if (!danasnjiPlan.zavrsene) danasnjiPlan.zavrsene = [];
+            if (!danasnjiPlan.zavrsene.includes("nizovi")) {
+                danasnjiPlan.zavrsene.push("nizovi");
+            }
+            localStorage.setItem("umg_dnevni_plan", JSON.stringify(danasnjiPlan));
+        }
+
+        document.getElementById('stat-best-score').innerText = bestScore;
+        document.getElementById('stat-total-games').innerText = totalGamesPlayed;
+
+        document.getElementById('end-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'none';
+        document.getElementById('summary-screen').style.display = 'flex';
+    }
+
+    function vratiSeNaStartIzStatistike() {
+        svirajZvuk('klik');
+        document.getElementById('summary-screen').style.display = 'none';
+        document.getElementById('start-screen').style.display = 'flex';
+    }
+</script>
+
+</body>
+</html>
