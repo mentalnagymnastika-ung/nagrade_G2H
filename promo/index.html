@@ -1,1 +1,397 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zdrava Potraga — Partnerska Statistika</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+            box-sizing: border-box;
+        }
 
+        .glavni-kontejner {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .logotip-naslov {
+            color: #0284c7;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .podnaslov {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .forma-pretraga {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .red-inputa {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"], input[type="number"], input[type="password"] {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        input:focus {
+            border-color: #8b5cf6;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .btn-proveri {
+            background: #8b5cf6;
+            color: #ffffff;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.25);
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .btn-proveri:hover {
+            transform: translateY(-1px);
+            background: #7c3aed;
+        }
+
+        #rezultatKontejner {
+            display: none;
+            text-align: left;
+            border-top: 2px dashed #e2e8f0;
+            padding-top: 25px;
+            margin-top: 10px;
+        }
+
+        .info-red {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .labela {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .vrednost {
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .staza-oznaka {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 12px;
+            border: 1px solid #7dd3fc;
+        }
+
+        .stat-kutija {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .broj-veliki {
+            font-size: 42px;
+            font-weight: 900;
+            color: #8b5cf6;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .procenat-tekst {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .traka-pozadina {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .traka-popuna {
+            background: #8b5cf6;
+            height: 100%;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-znacka {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 13px;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        .status-aktivno {
+            background: #d1fae5;
+            color: #047857;
+            border: 1px solid #34d399;
+        }
+
+        .status-zatvoreno {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #f87171;
+        }
+
+        .greska-tekst {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            margin-top: 15px;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #f87171;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glavni-kontejner">
+        <div class="logotip-naslov">Zdrava Potraga</div>
+        <div class="podnaslov">Promoterska kontrola i pregled utroška kvote</div>
+
+        <div class="forma-pretraga">
+            <div class="red-inputa">
+                <input type="text" id="unosKoda" placeholder="Šifra (npr. FILIP26)" style="flex: 2;">
+                <input type="text" id="unosPin" placeholder="PIN" style="flex: 1;" maxlength="6">
+            </div>
+            <button class="btn-proveri" id="btnProveri" onclick="window.proveriStatistiku()">Proveri stanje</button>
+        </div>
+
+        <div id="porukaGreska" class="greska-tekst"></div>
+
+        <div id="rezultatKontejner">
+            <div class="info-red">
+                <span class="labela">Klijent / Promoter:</span>
+                <span class="vrednost" id="prikazNaziv">—</span>
+            </div>
+            <div class="info-red">
+                <span class="labela">Dodeljena staza:</span>
+                <span class="staza-oznaka" id="prikazStaza">—</span>
+            </div>
+            <div class="info-red">
+                <span class="labela">Pravilo trajanja:</span>
+                <span class="vrednost" id="prikazPravilo">—</span>
+            </div>
+
+            <div class="stat-kutija">
+                <div class="broj-veliki" id="prikazUredjaja">0 / 0</div>
+                <div class="procenat-tekst" id="prikazProcenat">Iskorišćeno 0% kvote</div>
+                <div class="traka-pozadina">
+                    <div class="traka-popuna" id="prikazTraka"></div>
+                </div>
+            </div>
+
+            <div id="prikazStatus" class="status-znacka status-aktivno">
+                🟢 AKTIVNO
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB6cYBydkMN-PMMVu9zMxGUd-B8VdSPCEM",
+        authDomain: "zdrava-aktivnost.firebaseapp.com",
+        projectId: "zdrava-aktivnost",
+        storageBucket: "zdrava-aktivnost.firebasestorage.app",
+        messagingSenderId: "998592303349",
+        appId: "1:998592303349:web:af7f63de96b024ddf6b5bc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    signInAnonymously(auth).catch(err => console.error("Greška pri konekciji:", err));
+
+    window.proveriStatistiku = async function() {
+        let inputKod = document.getElementById("unosKoda");
+        let inputPin = document.getElementById("unosPin");
+        let btn = document.getElementById("btnProveri");
+        let greskaEl = document.getElementById("porukaGreska");
+        let kontejner = document.getElementById("rezultatKontejner");
+
+        let kod = inputKod.value.trim().toUpperCase();
+        let pin = inputPin.value.trim();
+
+        if (!kod || !pin) {
+            alert("Molimo vas unesite vaš promo kod i 4-cifreni tajni PIN.");
+            return;
+        }
+
+        greskaEl.style.display = "none";
+        kontejner.style.display = "none";
+        btn.innerText = "⏳";
+        btn.disabled = true;
+
+        try {
+            const docRef = doc(db, "ambasadori", kod);
+            const docSnap = await getDoc(docRef);
+
+            if (!docSnap.exists()) {
+                greskaEl.innerText = `⚠️ Kod "${kod}" nije pronađen u sistemu!`;
+                greskaEl.style.display = "block";
+                return;
+            }
+
+            let data = docSnap.data();
+
+            // BEZBEDNOSNA PROVERA PIN-A (Igrači na terenu ne znaju PIN, samo promoter)
+            if (!data.statPin || String(data.statPin).trim() !== pin) {
+                greskaEl.innerText = `⚠️ Pristup odbijen: Nedostaje ili je netačan bezbednosni PIN za pregled statistike.`;
+                greskaEl.style.display = "block";
+                return;
+            }
+
+            let stazaKod = (data.stazaPoveznica || "NEPOZNATO").toUpperCase();
+            let stazaIme = stazaKod;
+            try {
+                const stazaSnap = await getDoc(doc(db, "potrage", stazaKod));
+                if (stazaSnap.exists() && stazaSnap.data().ime) {
+                    stazaIme = `${stazaSnap.data().ime} (#${stazaKod})`;
+                }
+            } catch(e) {}
+
+            let ukupnoUredjaja = data.registrovanUredjaji ? data.registrovanUredjaji.length : 0;
+            let maxUredjaja = data.maxUredjaja || 1;
+            let jeNeograniceno = maxUredjaja === 999;
+
+            let procenat = jeNeograniceno ? 100 : Math.min(100, Math.round((ukupnoUredjaja / maxUredjaja) * 100));
+            let prikazBroj = jeNeograniceno ? `${ukupnoUredjaja} / ∞` : `${ukupnoUredjaja} / ${maxUredjaja}`;
+            let preostalo = jeNeograniceno ? "Neograničeno" : Math.max(0, maxUredjaja - ukupnoUredjaja);
+
+            let praviloTekst = `${data.trajanjeSati || 24}h od prve prijave`;
+            if (data.tipOgranicenja === 'datum') {
+                let fiksniDate = new Date(data.isticneFiksno);
+                praviloTekst = `Važi do ${fiksniDate.toLocaleDateString('sr-RS')} u ${fiksniDate.toLocaleTimeString('sr-RS', {hour:'2-digit', minute:'2-digit'})}`;
+            }
+
+            let aktivan = data.aktivan !== false;
+            let punoKapaciteta = !jeNeograniceno && ukupnoUredjaja >= maxUredjaja;
+            let jeOtvoreno = aktivan && !punoKapaciteta;
+
+            document.getElementById("prikazNaziv").innerText = data.naziv || "Partner kampanje";
+            document.getElementById("prikazStaza").innerText = stazaIme;
+            document.getElementById("prikazPravilo").innerText = praviloTekst;
+            
+            document.getElementById("prikazUredjaja").innerText = prikazBroj;
+            document.getElementById("prikazProcenat").innerText = jeNeograniceno 
+                ? `Ukupno registrovanih ulaza` 
+                : `Iskorišćeno ${procenat}% (Preostalo još: ${preostalo})`;
+            
+            document.getElementById("prikazTraka").style.width = procenat + "%";
+
+            let statusEl = document.getElementById("prikazStatus");
+            if (!jeOtvoreno) {
+                statusEl.className = "status-znacka status-zatvoreno";
+                statusEl.innerText = punoKapaciteta ? "🔴 KVOTA JE POTROŠENA" : "🔴 KAMPANJA ZATVORENA";
+            } else {
+                statusEl.className = "status-znacka status-aktivno";
+                statusEl.innerText = "🟢 KAMPANJA JE AKTIVNA";
+            }
+
+            kontejner.style.display = "block";
+
+        } catch (e) {
+            greskaEl.innerText = "Došlo je do greške pri konekciji sa serverom.";
+            greskaEl.style.display = "block";
+            console.error(e);
+        } finally {
+            btn.innerText = "PROVERI STANJE";
+            btn.disabled = false;
+        }
+    };
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const kodIzLinka = urlParams.get('kod');
+        const pinIzLinka = urlParams.get('pin');
+        
+        if (kodIzLinka) document.getElementById("unosKoda").value = kodIzLinka.toUpperCase();
+        if (pinIzLinka) document.getElementById("unosPin").value = pinIzLinka;
+
+        // Ako u linku postoje i KOD i PIN, automatski se pokreće prikaz stanja
+        if (kodIzLinka && pinIzLinka) {
+            window.proveriStatistiku();
+        }
+
+        document.getElementById("unosPin").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") window.proveriStatistiku();
+        });
+    };
+</script>
+</body>
+</html>
