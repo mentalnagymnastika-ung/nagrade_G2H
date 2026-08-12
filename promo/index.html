@@ -28,6 +28,8 @@
             max-width: 480px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             text-align: center;
+            box-sizing: border-box;
+            overflow: hidden; /* Sprečava bilo kakvo izlivanje van kartice */
         }
 
         .logotip-naslov {
@@ -51,16 +53,20 @@
             flex-direction: column;
             gap: 12px;
             margin-bottom: 25px;
+            width: 100%;
         }
 
         .red-inputa {
             display: flex;
             gap: 10px;
+            width: 100%;
         }
 
         input[type="text"], input[type="number"], input[type="password"] {
-            flex: 1;
-            padding: 14px;
+            min-width: 0; /* Ključno rešenje: Dozvoljava poljima da se suze na malim ekranima */
+            box-sizing: border-box; /* Uračunava ivice i padding u ukupnu širinu */
+            width: 100%;
+            padding: 14px 10px;
             border: 2px solid #cbd5e1;
             border-radius: 12px;
             font-size: 16px;
@@ -91,6 +97,8 @@
             text-transform: uppercase;
             box-shadow: 0 4px 10px rgba(139, 92, 246, 0.25);
             transition: transform 0.1s, background 0.2s;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .btn-proveri:hover {
@@ -122,6 +130,9 @@
         .vrednost {
             font-weight: bold;
             color: #0f172a;
+            text-align: right;
+            flex: 1;
+            padding-left: 10px;
         }
 
         .staza-oznaka {
@@ -132,6 +143,7 @@
             font-weight: 800;
             font-size: 12px;
             border: 1px solid #7dd3fc;
+            text-align: right;
         }
 
         .stat-kutija {
@@ -141,6 +153,8 @@
             padding: 20px;
             text-align: center;
             margin: 20px 0;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         .broj-veliki {
@@ -164,6 +178,7 @@
             border-radius: 10px;
             overflow: hidden;
             margin-top: 15px;
+            width: 100%;
         }
 
         .traka-popuna {
@@ -210,6 +225,8 @@
             border-radius: 10px;
             border: 1px solid #f87171;
             line-height: 1.4;
+            box-sizing: border-box;
+            width: 100%;
         }
     </style>
 </head>
@@ -309,7 +326,6 @@
 
             let data = docSnap.data();
 
-            // BEZBEDNOSNA PROVERA PIN-A (Igrači na terenu ne znaju PIN, samo promoter)
             if (!data.statPin || String(data.statPin).trim() !== pin) {
                 greskaEl.innerText = `⚠️ Pristup odbijen: Nedostaje ili je netačan bezbednosni PIN za pregled statistike.`;
                 greskaEl.style.display = "block";
@@ -383,7 +399,6 @@
         if (kodIzLinka) document.getElementById("unosKoda").value = kodIzLinka.toUpperCase();
         if (pinIzLinka) document.getElementById("unosPin").value = pinIzLinka;
 
-        // Ako u linku postoje i KOD i PIN, automatski se pokreće prikaz stanja
         if (kodIzLinka && pinIzLinka) {
             window.proveriStatistiku();
         }
